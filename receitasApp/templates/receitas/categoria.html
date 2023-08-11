@@ -1,0 +1,9 @@
+{% extends 'parciais/base.html' %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block conteudo %}
+    <div class="main-content main-content-list container">
+        {% for receita in receitas %}
+            {% include 'parciais/receita.html' %}
+        {% endfor %}
+    </div>
+{% endblock %}

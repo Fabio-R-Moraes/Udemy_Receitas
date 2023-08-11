@@ -1,0 +1,14 @@
+{% extends 'parciais/base.html' %}
+{% block titulo %}Home | {% endblock %}
+{% block conteudo %}
+{% include 'parciais/mensagens.html' %}
+    <div class="main-content main-content-list container">
+        {% for receita in receitas %}
+            {% include 'parciais/receita.html' %}
+        {% empty %}
+            <div class="center m-y">
+                <h1>Não há receitas para mostrar...</h1>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
