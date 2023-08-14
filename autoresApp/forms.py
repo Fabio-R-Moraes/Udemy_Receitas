@@ -16,7 +16,7 @@ def senha_forte(password):
 
     if not expressao.match(password):
         raise ValidationError((
-            'A senha precisa ter ao menos uma letra maiúscula,'
+            'ATENÇÃO: A senha precisa ter ao menos uma letra maiúscula,'
             'ao menos uma letra minúscula e um número. Também é necessário'
             'que tenha ao menos 8 caracteres...'
         ),
@@ -27,20 +27,31 @@ class RegisterForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         novo_placeholder(self.fields['username'], 'Seu nome de usuário')
-        novo_placeholder(self.fields['email'], 'Digite seu e-amil')
+        novo_placeholder(self.fields['email'], 'Digite seu e-mail')
         novo_placeholder(self.fields['first_name'], 'Seu nome')
         novo_placeholder(self.fields['last_name'], 'Seu sobrenome')
+        novo_placeholder(self.fields['password'], 'Digite sua senha')
+        novo_placeholder(self.fields['password2'], 'Confirme sua senha')
+
+    password = forms.CharField(
+        required=True,
+        label= 'Senha',
+        widget=forms.PasswordInput(),
+        error_messages={
+            'required': 'A senha não pode ser vazia...'
+        },
+        help_text=(
+            'A senha precisa ter ao menos uma letra maiúscula,'
+            'ao menos uma letra minúscula e um número. Também é necessário'
+            'que tenha ao menos 8 caracteres...'
+        ),
+        validators=[senha_forte],
+    )
 
     password2 = forms.CharField(
         required=True,
         label='Senha2',
-        error_messages={
-            'required': 'A senha não pode ser vazia...'
-        },
-        widget=forms.PasswordInput(attrs={
-            'placeholder': 'Confirme sua senha'
-        }),
-        validators=[senha_forte],
+        widget=forms.PasswordInput(),
     )
     class Meta:
         model = User
@@ -57,7 +68,6 @@ class RegisterForm(forms.ModelForm):
             'first_name': 'Nome',
             'last_name': 'Sobrenome',
             'email': 'E-mail',
-            'password': 'Senha',
         }
 
         help_texts = {
@@ -69,16 +79,6 @@ class RegisterForm(forms.ModelForm):
                 'required': 'Esse campo não pode ser vazio!!!',
             }
         }
-
-        widgets = {
-            'first_name': forms.TextInput(attrs={
-                'placeholder': 'Aqui fica seu primeiro nome...',
-            }),
-            'password': forms.PasswordInput(attrs={
-                'placeholder': 'Invente sua senha...'
-            }),
-        }
-
 
     def clean(self):
         dados = super().clean()

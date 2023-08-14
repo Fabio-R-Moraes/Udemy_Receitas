@@ -2,8 +2,10 @@
 {% block title %}Registro | {% endblock title %}
 {% block conteudo %}
     <div class="main-content center container">
-        <h2>Registro {{ request.session.numero }}</h2>
+        <h2>Registro</h2>
     </div>
+
+    {% include 'parciais/mensagens.html' %}
 
     <div class="main-content container">
         <form action="{% url 'autores:create' %}" method="POST">
