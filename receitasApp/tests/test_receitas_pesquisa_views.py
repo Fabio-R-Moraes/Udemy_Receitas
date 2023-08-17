@@ -9,7 +9,7 @@ class ReceitasPesquisaViewsTest(ReceitasTestBase):
 
     def test_receitas_pesquisa_carregue_o_template_correto(self):
         response = self.client.get(reverse('receitas:pesquisa') + '?q=teste')
-        self.assertTemplateUsed(response, 'receitas/pages/pesquisa.html')
+        self.assertTemplateUsed(response, 'receitas/pesquisa.html')
 
     def test_receitas_procura_sem_termo_levanta_um_404(self):
         url = reverse('receitas:pesquisa')

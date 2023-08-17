@@ -4,9 +4,9 @@ from paginacao import make_pagination_range
 class PaginacaoTest(TestCase):
     def test_fazer_um_range_de_paginacao_retornar_um_range_de_paginacao(self):
         paginacao = make_pagination_range(
-        range_pagina=[list(range(1, 21))],
-        qtd_paginas=4,
-        pagina_atual=1,
+            range_pagina=list(range(1, 21)),
+            qtd_paginas=4,
+            pagina_atual=1
         )['paginacao']
 
         self.assertEqual([1, 2, 3, 4], paginacao)
@@ -15,9 +15,9 @@ class PaginacaoTest(TestCase):
         # Página Atual=10, Quantidade de Página= 2, Página do Meio = 2
         # Aqui o range DEVE mudar
         paginacao = make_pagination_range(
-        range_pagina=[list(range(1, 21))],
-        qtd_paginas=4,
-        pagina_atual=10,
+            range_pagina=list(range(1, 21)),
+            qtd_paginas=4,
+            pagina_atual=10,
         )['paginacao']
 
         self.assertEqual([9, 10, 11, 12], paginacao)
@@ -25,9 +25,9 @@ class PaginacaoTest(TestCase):
         # Página Atual=12, Quantidade de Página= 2, Página do Meio = 2
         # Aqui o range DEVE mudar
         paginacao = make_pagination_range(
-        range_pagina=[list(range(1, 21))],
-        qtd_paginas=4,
-        pagina_atual=12,
+            range_pagina=list(range(1, 21)),
+            qtd_paginas=4,
+            pagina_atual=12,
         )['paginacao']
 
         self.assertEqual([11, 12, 13, 14], paginacao)
@@ -36,29 +36,29 @@ class PaginacaoTest(TestCase):
         # Página Atual=18, Quantidade de Página= 2, Página do Meio = 2
         # Aqui o range DEVE mudar
         paginacao = make_pagination_range(
-        range_pagina=[list(range(1, 21))],
-        qtd_paginas=4,
-        pagina_atual=18,
+            range_pagina=list(range(1, 21)),
+            qtd_paginas=4,
+            pagina_atual=14,
         )['paginacao']
 
-        self.assertEqual([17, 18, 19, 20], paginacao)
+        self.assertEqual([13, 14, 15, 16], paginacao)
 
         # Página Atual=19, Quantidade de Página= 2, Página do Meio = 2
         # Aqui o range DEVE mudar
         paginacao = make_pagination_range(
-        range_pagina=[list(range(1, 21))],
-        qtd_paginas=4,
-        pagina_atual=19,
+            range_pagina=list(range(1, 21)),
+            qtd_paginas=4,
+            pagina_atual=15,
         )['paginacao']
 
-        self.assertEqual([17, 18, 19, 20], paginacao)
+        self.assertEqual([14, 15, 16, 17], paginacao)
 
         # Página Atual=20, Quantidade de Página= 2, Página do Meio = 2
         # Aqui o range DEVE mudar
         paginacao = make_pagination_range(
-        range_pagina=[list(range(1, 21))],
-        qtd_paginas=4,
-        pagina_atual=20,
+            range_pagina=list(range(1, 21)),
+            qtd_paginas=4,
+            pagina_atual=16,
         )['paginacao']
 
-        self.assertEqual([17, 18, 19, 20], paginacao)
+        self.assertEqual([15, 16, 17, 18], paginacao)

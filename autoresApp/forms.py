@@ -33,6 +33,37 @@ class RegisterForm(forms.ModelForm):
         novo_placeholder(self.fields['password'], 'Digite sua senha')
         novo_placeholder(self.fields['password2'], 'Confirme sua senha')
 
+    username = forms.CharField(
+        label = 'Usuário',
+        help_text=('Obrigatório. 150 caracteres ou menos. '
+                   'Letras, números e @/./+/-/_ apenas.'),
+        error_messages={
+            'required': 'Este campo é obrigatório.',
+            'min_length': 'Esse campo não pode ter menos de 4 caracteres!!!',
+            'max_length': 'Certifique-se de que o valor tenha no máximo 150 caracteres',
+        },
+        min_length=4, max_length=150
+    )
+
+    first_name = forms.CharField(
+        required=True,
+        label='Nome',
+        error_messages={'required':'Escreva o seu nome'}
+    )
+
+    last_name = forms.CharField(
+        required=True,
+        label='Sobrenome',
+        error_messages={'required': 'Escreva seu sobrenome'}
+    )
+
+    email = forms.EmailField(
+        required=True,
+        label='E-mail',
+        error_messages={'required': 'Deixe seu melhor e-mail...'},
+        help_text='Digite seu melhor e-mail'
+    )
+
     password = forms.CharField(
         required=True,
         label= 'Senha',
@@ -52,6 +83,9 @@ class RegisterForm(forms.ModelForm):
         required=True,
         label='Senha2',
         widget=forms.PasswordInput(),
+        error_messages={
+            'required': 'A confirmação da senha não pode ser vazia...'
+        },
     )
     class Meta:
         model = User
@@ -63,22 +97,9 @@ class RegisterForm(forms.ModelForm):
             'password',
             ]
         #exclude = ['first_name']
-        labels = {
-            'username': 'Usuário',
-            'first_name': 'Nome',
-            'last_name': 'Sobrenome',
-            'email': 'E-mail',
-        }
-
-        help_texts = {
-            'email': 'Digite seu melhor e-mail',
-        }
-
-        error_messages = {
-            'username': {
-                'required': 'Esse campo não pode ser vazio!!!',
-            }
-        }
+        #labels = {
+        #    'username': 'Usuário',
+        #}
 
     def clean(self):
         dados = super().clean()
