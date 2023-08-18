@@ -128,3 +128,17 @@ class AuthorRegisterFormIntegrationTest(djangoTestCase):
         self.assertNotIn(msg, response.content.decode('utf-8'))
         #self.assertIn(msg, response.context['form'].errors.get('password'))
 
+    def test_send_get_requests_to_registration_create_view_returns_404(self):
+        url = reverse('autores:create')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_email_field_must_be_unique(self):
+        url = reverse('autores:create')
+        self.client.post(url, data=self.form_data, follow=True)
+
+        response = self.client.post(url, data=self.form_data, follow=True)
+        msg = 'O e-mail do usuário já está sendo usado!!!'
+
+        self.assertIn(msg, response.context['form'].errors.get('email'))
+        # self.assertIn(msg, response.content.decode('utf-8'))

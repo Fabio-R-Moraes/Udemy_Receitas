@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt_br">
+<head>
+    {% include 'global/parciais/cabecalho.html' %}
+    <title>{% block titulo %}{% endblock %} Receitas</title>
+</head>
+<body>
+    {% include 'global/parciais/header.html' %}
+    {% include 'global/parciais/procura.html' %}
+    <main class="main-content-container">
+        {% block conteudo %} {% endblock %}
+        {% include 'global/parciais/paginacao.html' %}
+    </main>
+    {% include 'global/parciais/rodape.html' %}
+</body>
+</html>

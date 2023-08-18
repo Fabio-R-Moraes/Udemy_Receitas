@@ -73,3 +73,24 @@ class ReceitasHomeViewsTest(ReceitasTestBase):
         self.assertEqual(paginacao.num_pages, 3)
         self.assertEqual(len(paginacao.get_page(1)), 4)
         self.assertEqual(len(paginacao.get_page(2)), 4)
+
+    def test_invalid_page_query_uses_page_one(self):
+        # Precisa de varias receita para fazer o teste
+        for i in range(12):
+            kwargs = {'autor_data': {
+                'username': f'Fabio_{i}'}, 'slug': f'bundinha_{i}'}
+            self.faca_receita(**kwargs)
+
+        with patch('receitasApp.views.POR_PAGINA', new=4):
+            response = self.client.get(reverse('receitas:home') + '?page=1A')
+            self.assertEqual(
+                response.context['receitas'].number,
+                1
+            )
+
+            response = self.client.get(reverse('receitas:home') + '?page=2')
+            self.assertEqual(
+                response.context['receitas'].number,
+                2
+            )
+

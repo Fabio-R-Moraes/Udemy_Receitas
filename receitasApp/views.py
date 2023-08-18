@@ -15,6 +15,7 @@ def home(request):
 
     pagina_objeto, range_paginacao = make_pagination(request, receitas, POR_PAGINA)
 
+    '''
     messages.success(
         request, 'Oiiii... você ganhou uma mensagem de sucesso!!!')
 
@@ -23,6 +24,7 @@ def home(request):
 
     messages.info(
         request, 'Oiiii... essa mensagem é apenas informativa!!!')
+    '''
 
     return render(request, 'receitas/home.html', context={
         'receitas': pagina_objeto,
