@@ -1,10 +1,7 @@
 from django.test import TestCase
 from receitasApp.models import Categoria, Receitas, User
 
-class ReceitasTestBase(TestCase):
-    def setUp(self) -> None:
-        return super().setUp()
-
+class ReceitaMixing:
     def faca_categoria(self, nome='Jantar'):
         return Categoria.objects.create(nome=nome)
 
@@ -60,3 +57,21 @@ class ReceitasTestBase(TestCase):
             modo_preparo_html=modo_preparo_html,
             esta_publicado=esta_publicado,
         )
+
+    def faca_receita_em_lote(self, qtde=10):
+        receitas = []
+        for i in range(qtde):
+            kwargs = {
+                'titulo': f'Alargando o anel {i}',
+                'slug': f'bundinha_{i}',
+                'autor_data': {'username': f'Fabio_{i}'}
+            }
+            receita = self.faca_receita(**kwargs)
+            receitas.append(receita)
+
+        return receitas
+
+class ReceitasTestBase(TestCase, ReceitaMixing):
+    def setUp(self) -> None:
+        return super().setUp()
+

@@ -7,6 +7,7 @@ import os
 from django.contrib import messages
 
 POR_PAGINA = os.environ.get('RECEITAS_POR_PAGINA', 6)
+
 def home(request):
     # receitas = Receitas.objects.filter(esta_publicado=True).order_by('-id')
     receitas = Receitas.objects.filter(

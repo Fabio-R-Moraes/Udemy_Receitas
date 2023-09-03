@@ -62,7 +62,7 @@ class AuthorRegisterFormIntegrationTest(djangoTestCase):
         ('username', 'Este campo é obrigatório.'),
         ('first_name', 'Escreva o seu nome'),
         ('last_name', 'Escreva seu sobrenome'),
-        ('email', 'Deixe seu melhor e-mail...'),
+        ('email', 'Informe um e-mail válido...'),
         ('password', 'A senha não pode ser vazia...'),
         ('password2', 'A confirmação da senha não pode ser vazia...'),
     ])

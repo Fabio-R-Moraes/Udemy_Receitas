@@ -39,7 +39,7 @@ class RegisterForm(forms.ModelForm):
     email = forms.EmailField(
         required=True,
         label='E-mail',
-        error_messages={'required': 'Deixe seu melhor e-mail...'},
+        error_messages={'required': 'Informe um e-mail válido...'},
         help_text='Digite seu melhor e-mail'
     )
 

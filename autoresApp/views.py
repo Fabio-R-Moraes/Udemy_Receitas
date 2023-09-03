@@ -66,10 +66,13 @@ def login_create(request):
 @login_required(login_url='autores:login', redirect_field_name='next')
 def logout_view(request):
     if not request.POST:
+        messages.error(request, 'Solicitação de logout inválida!')
         return redirect(reverse('autores:login'))
 
     if request.POST.get('username') != request.user.username:
+        messages.error(request, 'Você está tentando sair com OUTRO usuário!!!')
         return redirect(reverse('autores:login'))
 
+    messages.success(request, 'Usuário deslogado com sucesso!!!')
     logout(request)
     return redirect(reverse('autores:login'))
