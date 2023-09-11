@@ -9,4 +9,20 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('login/create/', views.login_create, name='login_create'),
     path('logout/', views.logout_view, name='logout'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path(
+        'dashboard/receita/<int:id>/edit/',
+        views.DashboardReceitas.as_view(),
+        name='dashboard_receita_edit'
+    ),
+    path(
+        'dashboard/receita/nova/',
+        views.dashboard_receita_nova,
+        name='dashboard_receita_nova'
+    ),
+    path(
+        'dashboard/receita/delete/',
+        views.dashboard_receita_delete,
+        name='dashboard_receita_delete'
+    ),
 ]

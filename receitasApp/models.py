@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
+from django.utils.text import slugify
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=65)
@@ -33,3 +35,13 @@ class Receitas(models.Model):
 
     def __str__(self):
         return self.titulo
+
+    def get_abolute_url(self):
+        return reverse('receitas:receita', args=(self.id,))
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            slug = f'{slugify(self.titulo)}'
+            self.slug = slug
+
+        return super().save(*args, **kwargs)
