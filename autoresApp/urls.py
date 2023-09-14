@@ -17,12 +17,12 @@ urlpatterns = [
     ),
     path(
         'dashboard/receita/nova/',
-        views.dashboard_receita_nova,
+        views.DashboardReceitas.as_view(),
         name='dashboard_receita_nova'
     ),
     path(
         'dashboard/receita/delete/',
-        views.dashboard_receita_delete,
+        views.DashboardReceitaDelete.as_view(),
         name='dashboard_receita_delete'
     ),
 ]

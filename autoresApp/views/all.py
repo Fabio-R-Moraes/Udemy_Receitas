@@ -6,7 +6,6 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from receitasApp.models import Receitas
-from autoresApp.forms.receita_form import AutoresReceitaForm
 
 def register_view(request):
     register_form_data = request.session.get('register_form_data', None)
@@ -91,88 +90,3 @@ def dashboard(request):
                 'receitas': minhas_receitas,
         }
     )
-
-@login_required(login_url='autores:login', redirect_field_name='next')
-def dashboard_receita_edit(request, id):
-    minha_receita = Receitas.objects.filter(
-        esta_publicado=False,
-        autor=request.user,
-        pk=id,
-    ).first()
-
-    if not minha_receita:
-        raise Http404()
-
-    formulario = AutoresReceitaForm(
-        data=request.POST or None,
-        files=request.FILES or None,
-        instance= minha_receita
-    )
-
-    if formulario.is_valid():
-        #Agora o formulário é válido e u posso tentar salvar
-        receita = formulario.save(commit=False)
-        receita.autor = request.user
-        receita.modo_preparo_html = False
-        receita.esta_publicado = False
-
-        receita.save()
-        messages.success(request, 'Sua receita foi salva com sucesso!!!')
-        return redirect(reverse('autores:dashboard_receita_edit', args=(id,)))
-
-    return render(
-        request,
-        'autores/dashboard_receitas.html',
-        context={
-            'form': formulario
-        }
-    )
-
-@login_required(login_url='autores:login', redirect_field_name='next')
-def dashboard_receita_nova(request):
-    formulario = AutoresReceitaForm(
-        data=request.POST or None,
-        files=request.FILES or None
-    )
-
-    if formulario.is_valid():
-        #Agora o formulário é válido e eu posso tentar salvar
-        receita: Receitas = formulario.save(commit=False)
-        receita.autor = request.user
-        receita.modo_preparo_html = False
-        receita.esta_publicado = False
-
-        receita.save()
-        messages.success(request, 'Sua receita foi salva com sucesso!!!')
-        return redirect(reverse('autores:dashboard_receita_edit', args=(receita.id,)))
-
-    return render(
-        request,
-        'autores/dashboard_receitas.html',
-        context={
-            'form': formulario,
-            'form_action': reverse('autores:dashboard_receita_nova')
-        }
-    )
-
-@login_required(login_url='autores:login', redirect_field_name='next')
-def dashboard_receita_delete(request):
-    if not request.POST:
-        raise Http404()
-
-    POST = request.POST
-    id = POST.get('id')
-
-    minha_receita = Receitas.objects.filter(
-        esta_publicado=False,
-        autor=request.user,
-        pk=id,
-    ).first()
-
-    if not minha_receita:
-        raise Http404()
-
-    minha_receita.delete()
-    messages.success(request, 'Receita excluída com sucesso!!!!')
-
-    return redirect(reverse('autores:dashboard'))

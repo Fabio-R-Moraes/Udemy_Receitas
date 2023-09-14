@@ -5,7 +5,7 @@ from .test_receitas_base import ReceitasTestBase
 class ReceitasPesquisaViewsTest(ReceitasTestBase):
     def test_receitas_pesquisa_usando_a_view_correta(self):
         resolved = resolve(reverse('receitas:pesquisa'))
-        self.assertIs(resolved.func, views.pesquisa)
+        self.assertIs(resolved.func.view_class, views.ReceitaListViewPesquisa)
 
     def test_receitas_pesquisa_carregue_o_template_correto(self):
         response = self.client.get(reverse('receitas:pesquisa') + '?q=teste')

@@ -7,7 +7,7 @@ class ReceitasCategoriaViewsTest(ReceitasTestBase):
         view = resolve(
             reverse('receitas:categoria', kwargs={'categoria_id': 1000})
         )
-        self.assertIs(view.func, views.categoria)
+        self.assertIs(view.func.view_class, views.ReceitaListViewCategoria)
 
     def test_receitas_categoria_view_retorna_404_se_nao_encontrar_receita(self):  # noqa: E501
         response = self.client.get(
@@ -30,7 +30,7 @@ class ReceitasCategoriaViewsTest(ReceitasTestBase):
         # Precisa de uma receita para fazer o teste
         receita = self.faca_receita(esta_publicado=False)
         response = self.client.get(
-            reverse('receitas:receita', kwargs={'id': receita.categoria.id})
+            reverse('receitas:receita', kwargs={'pk': receita.categoria.id})
         )
 
         self.assertEqual(response.status_code, 404)

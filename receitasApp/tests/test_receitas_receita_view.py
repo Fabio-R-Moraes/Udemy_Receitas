@@ -5,13 +5,13 @@ from .test_receitas_base import ReceitasTestBase
 class ReceitasReceitaViewsTest(ReceitasTestBase):
     def test_receitas_receita_view_esta_correta(self):
         view = resolve(
-            reverse('receitas:receita', kwargs={'id': 1})
+            reverse('receitas:receita', kwargs={'pk': 1})
         )
-        self.assertIs(view.func, views.receita)
+        self.assertIs(view.func.view_class, views.ReceitaDetail)
 
     def test_receitas_receita_view_retorna_404_se_nao_encontrar_receita(self):
         response = self.client.get(
-            reverse('receitas:receita', kwargs={'id': 1000})
+            reverse('receitas:receita', kwargs={'pk': 1000})
         )
         self.assertEqual(response.status_code, 404)
 
@@ -23,7 +23,7 @@ class ReceitasReceitaViewsTest(ReceitasTestBase):
             reverse(
                 'receitas:receita',
                 kwargs={
-                    'id': 1
+                    'pk': 1
                 }
             ))
 
@@ -40,7 +40,7 @@ class ReceitasReceitaViewsTest(ReceitasTestBase):
             reverse(
                 'receitas:receita',
                 kwargs={
-                    'id': receita.id
+                    'pk': receita.id
                 }
             ))
 
@@ -49,7 +49,7 @@ class ReceitasReceitaViewsTest(ReceitasTestBase):
     def test_receitas_pesquisa_usando_a_view_correta(self):
         resolved = resolve(reverse('receitas:pesquisa'))
 
-        self.assertIs(resolved.func, views.pesquisa)
+        self.assertIs(resolved.func.view_class, views.ReceitaListViewPesquisa)
 
     def test_receitas_pesquisa_carregue_o_template_correto(self):
         response = self.client.get(reverse('receitas:pesquisa') + '?q=teste')

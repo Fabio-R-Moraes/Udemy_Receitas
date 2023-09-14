@@ -1,87 +1,114 @@
-from django.shortcuts import render, get_list_or_404, get_object_or_404
 from .models import Receitas
 from django.http import Http404
 from django.db.models import Q
 from utils.paginacao import make_pagination
 import os
-from django.contrib import messages
+from django.views.generic import ListView, DetailView
 
 POR_PAGINA = os.environ.get('RECEITAS_POR_PAGINA', 6)
 
-def home(request):
-    # receitas = Receitas.objects.filter(esta_publicado=True).order_by('-id')
-    receitas = Receitas.objects.filter(
-        esta_publicado=True,
-        ).order_by('-id')
+class ReceitaListViewBase(ListView):
+    model = Receitas
+    paginate_by = None
+    context_object_name = 'receitas'
+    ordering = ['-id']
+    template_name = 'receitas/home.html'
 
-    pagina_objeto, range_paginacao = make_pagination(request, receitas, POR_PAGINA)
+    def get_queryset(self, *args, **kwargs):
+        consulta = super().get_queryset(*args, **kwargs)
+        consulta = consulta.filter(
+            esta_publicado=True,
+        )
 
-    '''
-    messages.success(
-        request, 'Oiiii... você ganhou uma mensagem de sucesso!!!')
+        return consulta
 
-    messages.error(
-        request, 'Oiiii... você tomou um erro!!!')
+    def get_context_data(self, *args, **kwargs):
+        contexto = super().get_context_data(*args, **kwargs)
+        pagina_objeto, range_paginacao = make_pagination(
+            self.request,
+            contexto.get('receitas'),
+            POR_PAGINA
+        )
+        contexto.update(
+            {'receitas': pagina_objeto, 'range_paginacao': range_paginacao,}
+        )
 
-    messages.info(
-        request, 'Oiiii... essa mensagem é apenas informativa!!!')
-    '''
+        return contexto
 
-    return render(request, 'receitas/home.html', context={
-        'receitas': pagina_objeto,
-        'range_paginacao': range_paginacao,
+
+class ReceitaListViewHome(ReceitaListViewBase):
+    template_name = 'receitas/home.html'
+
+class ReceitaListViewCategoria(ReceitaListViewBase):
+    template_name = 'receitas/categoria.html'
+
+    def get_context_data(self, *args, **kwargs):
+        contexto = super().get_context_data(*args, **kwargs)
+
+        contexto.update({
+            'titulo': f'{contexto.get("receitas")[0].categoria.nome} - Categoria | '
         })
-    # HTTP Response
 
-def categoria(request, categoria_id):
-    receitas = get_list_or_404(Receitas.objects.filter(
-        categoria__id=categoria_id,
-        esta_publicado=True,
-        ).order_by('-id'))
+        return contexto
 
-    pagina_objeto, range_paginacao = make_pagination(request, receitas, POR_PAGINA)
+    def get_queryset(self, *args, **kwargs):
+        consulta = super().get_queryset(*args, **kwargs)
+        consulta = consulta.filter(
+            esta_publicado=True,
+            categoria__id= self.kwargs.get('categoria_id')
+        )
 
-    return render(request, 'receitas/categoria.html', context={
-        'receitas': pagina_objeto,
-        'range_paginacao': range_paginacao,
-        'titulo': f'{receitas[0].categoria.nome} - Categoria | '
+        if not consulta:
+            raise Http404()
+
+        return consulta
+
+class ReceitaListViewPesquisa(ReceitaListViewBase):
+    template_name = 'receitas/pesquisa.html'
+
+    def get_context_data(self, *args, **kwargs):
+        contexto = super().get_context_data(*args, **kwargs)
+        termo_procurado = self.request.GET.get('q', '').strip()
+
+        if not termo_procurado:
+            raise Http404()
+
+        contexto.update({
+            'page_title': f'Pesquisando por "{termo_procurado}" |',
+            'termo_procurado': termo_procurado,
+            'adicional_url_query': f'&q={termo_procurado}',
         })
-    # HTTP Response
 
-def receita(request, id):
-    # receita = Receitas.objects.filter(
-    #        pk=id,
-    #        esta_publicado=True,
-    #        ).order_by('-id').first()
+        return contexto
 
-    receita = get_object_or_404(Receitas, pk=id, esta_publicado=True)
+    def get_queryset(self, *args, **kwargs):
+        termo_procurado = self.request.GET.get('q', '').strip()
+        consulta = super().get_queryset(*args, **kwargs)
+        consulta = consulta.filter(
+            Q(
+                Q(titulo__icontains=termo_procurado) |
+                Q(descricao__icontains=termo_procurado),
+            ),
+            esta_publicado=True,
+        )
 
-    return render(request, 'receitas/receita-view.html', context={
-        'receita': receita,
-        'is_detail_page': True,
-    })
-    # HTTP Request
+        return consulta
 
-def pesquisa(request):
-    messages.success(request, 'Oiiii... você veio pesquisar algo... eu viiii!!!')
-    termo_procurado = request.GET.get('q', '').strip()
+class ReceitaDetail(DetailView):
+    model = Receitas
+    context_object_name = 'receita'
+    template_name = 'receitas/receita-view.html'
 
-    if not termo_procurado:
-        raise Http404()
+    def get_queryset(self, *args, **kwargs):
+        consulta = super().get_queryset(*args, **kwargs)
+        consulta = consulta.filter(esta_publicado=True,)
 
-    receitas = Receitas.objects.filter(
-        Q(
-        Q(titulo__icontains=termo_procurado) |
-        Q(descricao__icontains=termo_procurado),
-        ),
-        esta_publicado=True,
-        ).order_by('-titulo')
+        return consulta
 
-    pagina_objeto, range_paginacao = make_pagination(request, receitas, POR_PAGINA)
-
-    return render(request, 'receitas/pesquisa.html', {
-        'page_title': f'Pesquisando por "{termo_procurado}" |',
-        'receitas': pagina_objeto,
-        'range_paginacao': range_paginacao,
-        'adicional_url_query': f'&q={termo_procurado}',
+    def get_context_data(self, *args, **kwargs):
+        contexto = super().get_context_data(*args, **kwargs)
+        contexto.update({
+            'is_detail_page': True,
         })
+
+        return contexto

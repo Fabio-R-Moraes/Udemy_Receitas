@@ -7,7 +7,7 @@ class ReceitasHomeViewsTest(ReceitasTestBase):
     # Testes para a página HOME
     def test_receitas_home_view_esta_correta(self):
         view = resolve(reverse('receitas:home'))
-        self.assertIs(view.func, views.home)
+        self.assertIs(view.func.view_class, views.ReceitaListViewHome)
 
     def test_receitas_home_view_retorna_status_codigo_200_ok(self):
         response = self.client.get(reverse('receitas:home'))
