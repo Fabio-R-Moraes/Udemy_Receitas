@@ -53,3 +53,73 @@ sudo apt install postgresql postgresql-contrib -y
 sudo apt install libpq-dev -y
 sudo apt install git
 ```
+## Instalando o PostgreSQL
+
+```
+# Nós fizemos isso acima
+sudo apt install postgresql postgresql-contrib -y
+```
+
+Caso queira mais detalhes: https://youtu.be/VLpPLaGVJhI  
+Mais avançado: https://youtu.be/FZaEukN_raA
+
+### Configurações
+
+```
+sudo -u postgres psql
+# Criando um super usuário
+CREATE ROLE fabio WITH LOGIN SUPERUSER CREATEDB CREATEROLE PASSWORD 'fbrql823';
+# Criando a base de dados
+CREATE DATABASE bdreceitas WITH OWNER fabio;
+# Dando permissões
+GRANT ALL PRIVILEGES ON DATABASE bdreceitas TO fabio;
+# Saindo
+\q
+sudo systemctl restart postgresql
+```
+
+Caso queira mais detalhes: https://youtu.be/VLpPLaGVJhI  
+Mais avançado: https://youtu.be/FZaEukN_raA
+
+## Configurando o git
+
+```
+git config --global user.name 'Fábio Moraes'
+git config --global user.email 'fmoraes05@gmail.com'
+git config --global init.defaultBranch main
+```
+## Criando um repositório no servidor
+
+Um repositório bare é um repositório transitório (como se fosse um github).
+
+```
+mkdir -p ~/app_bare
+cd ~/app_bare
+git init --bare
+cd ~
+```
+
+Criando o repositório da aplicação
+
+```
+mkdir -p ~/app_repo
+cd ~/app_repo
+git init
+git remote add origin ~/app_bare
+git add . && git commit -m 'Initial'
+cd ~
+```
+
+No seu computador local, adicione o bare como remoto:
+
+```
+git remote add app_bare cursodjangoserver:~/app_bare
+git push app_bare <branch>
+```
+
+No servidor, em app_repo, faça pull:
+
+```
+cd ~/app_repo
+git pull origin <branch>
+```
