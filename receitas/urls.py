@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('receitasApp.urls')),
     path('autores/', include('autoresApp.urls')),
+    path("__debug__/", include("debug_toolbar.urls")),
 ]
