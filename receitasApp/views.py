@@ -1,13 +1,54 @@
 from .models import Receitas
 from django.http.response import Http404
-from django.db.models import Q
 from utils.paginacao import make_pagination
 import os
 from django.views.generic import ListView, DetailView
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
+from django.shortcuts import render
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+from django.db.models.aggregates import Count
+from tagApp.models import Tag
 
 POR_PAGINA = os.environ.get('RECEITAS_POR_PAGINA', 6)
+
+def teoria(request, *args, **kwargs):
+    #Pegando um elemento através de objects.get
+    #try:
+    #    receitas = Receitas.objects.get(pk=4)
+    #except ObjectDoesNotExist:
+     #   receitas = None
+
+    #receitas = Receitas.objects.all()
+
+    #Vem uma lista ordenada
+    #receitas = receitas.filter(titulo__icontains='Arroz')
+    #Vem o primeiro item
+    #receitas = receitas.filter(titulo__icontains='Arroz').order_by('-id').first()
+    #Vem o último item
+    #receitas = receitas.filter(titulo__icontains='Arroz').order_by('-id').last()
+
+    #print(receitas[0].titulo)
+
+    #Pegando as receitas com ID IGUAL ao do USUÁRIO
+    #receitas = Receitas.objects.filter(
+    #    id=F('autor__id')
+    #)[0:10]
+    #receitas = receitas.select_related('autor')
+
+    receitas = Receitas.objects.get_publicados()
+    numero_de_receitas = receitas.aggregate(total=Count('id'))
+
+    contexto = {
+        'receitas': receitas,
+        'total_receitas': numero_de_receitas['total']
+    }
+    return render(
+        request,
+        'receitas/teoria.html',
+        context=contexto
+    )
 
 class ReceitaListViewBase(ListView):
     model = Receitas
@@ -22,6 +63,7 @@ class ReceitaListViewBase(ListView):
             esta_publicado=True,
         )
         consulta = consulta.select_related('autor', 'categoria')
+        consulta = consulta.prefetch_related('tags')
 
         return consulta
 
@@ -150,3 +192,27 @@ class ReceitaDetailAPI(ReceitaDetail):
             receita_dicionario,
             safe=False,
         )
+
+class ReceitaListViewTag(ReceitaListViewBase):
+    template_name = 'receitas/tag.html'
+
+    def get_context_data(self, *args, **kwargs):
+        contexto = super().get_context_data(*args, **kwargs)
+        titulo_pagina = Tag.objects.filter(slug=self.kwargs.get('slug', '')).first()
+
+        if not titulo_pagina:
+             titulo_pagina = 'Sem receitas para mostrar...'
+
+        titulo_pagina = f'{titulo_pagina} - Tag |'
+
+        contexto.update({
+            'titulo_pagina': titulo_pagina,
+        })
+
+        return contexto
+
+    def get_queryset(self, *args, **kwargs):
+        consulta = super().get_queryset(*args, **kwargs)
+        consulta = consulta.filter(tags__slug=self.kwargs.get('slug', ''))
+
+        return consulta

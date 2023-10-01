@@ -73,4 +73,13 @@
         {% endif %}
     </div>
     {% endif %}
+
+    {% if receita.tags.all %}
+        <p>
+            Tags:
+            {% for tag in receita.tags.all %}
+                <a href="{% url 'receitas:tags' tag.slug %}">{{ tag.nome }}</a>,
+            {% endfor %}
+        </p>
+    {% endif %}
 </div>

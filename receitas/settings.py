@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'receitasApp',
     'autoresApp',
     'debug_toolbar',
+    'tagApp',
 ]
 
 MIDDLEWARE = [

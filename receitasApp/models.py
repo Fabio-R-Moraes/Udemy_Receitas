@@ -2,6 +2,25 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.text import slugify
+from django.db.models import F, Value
+from django.db.models.functions import Concat
+from django.contrib.contenttypes.fields import GenericRelation
+from tagApp.models import Tag
+
+class ReceitasManager(models.Manager):
+    def get_publicados(self):
+        return self.filter(
+            esta_publicado=True,
+        ).annotate(
+        autor_nome_completo=Concat(
+            F('autor__first_name'),
+            Value(' '),
+            F('autor__last_name'),
+            Value(' ('),
+            F('autor__username'),
+            Value(')')
+        )
+    ).order_by('-id')
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=65)
@@ -10,6 +29,7 @@ class Categoria(models.Model):
         return self.nome
 
 class Receitas(models.Model):
+    objects = ReceitasManager()
     titulo = models.CharField(max_length=65)
     descricao = models.CharField(max_length=165)
     slug = models.SlugField(unique=True)
@@ -32,6 +52,7 @@ class Receitas(models.Model):
     autor = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True
     )
+    tags = GenericRelation(Tag, related_query_name='receitas')
 
     def __str__(self):
         return self.titulo

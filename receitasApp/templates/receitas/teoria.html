@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teoria</title>
+</head>
+<body>
+    <h1>Teoria</h1>
+    <ul>
+        {% for receita in receitas %}
+            <li>{{ receita.id }} {{ receita.titulo }} : {{ receita.autor_nome_completo }}</li>
+        {% empty %}
+            <p>Sem receitas para mostrar...</p>
+        {% endfor %}
+    </ul>
+    <h2>Total de receitas: {{ total_receitas }} </h2>
+</body>
+</html>
