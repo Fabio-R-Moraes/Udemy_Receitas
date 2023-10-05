@@ -203,7 +203,7 @@ class ReceitaListViewTag(ReceitaListViewBase):
         if not titulo_pagina:
              titulo_pagina = 'Sem receitas para mostrar...'
 
-        titulo_pagina = f'{titulo_pagina} - Tag |'
+        titulo_pagina = f'{titulo_pagina.nome} - Tag |'
 
         contexto.update({
             'titulo_pagina': titulo_pagina,

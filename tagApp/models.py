@@ -1,6 +1,4 @@
 from django.db import models
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.text import slugify
 import string
 from random import SystemRandom
@@ -8,18 +6,6 @@ from random import SystemRandom
 class Tag(models.Model):
     nome = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
-
-    #Aqui começam os campos para a relação genérica
-
-    #Representa o model que queremos encaixar aqui
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-
-    #Representa o ID da linha do model descrito acima
-    object_id = models.CharField(max_length=255)
-
-    #Um campo que conhece a relação genérica que conhece
-    #os campos acima (content_type e object_id)
-    content_object = GenericForeignKey('content_type', 'object_id')
 
     def save(self, *args, **kwargs):
         if not self.slug:

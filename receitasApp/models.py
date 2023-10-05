@@ -4,8 +4,9 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.db.models import F, Value
 from django.db.models.functions import Concat
-from django.contrib.contenttypes.fields import GenericRelation
 from tagApp.models import Tag
+from django.forms import ValidationError
+from collections import defaultdict
 
 class ReceitasManager(models.Manager):
     def get_publicados(self):
@@ -52,7 +53,7 @@ class Receitas(models.Model):
     autor = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True
     )
-    tags = GenericRelation(Tag, related_query_name='receitas')
+    tags = models.ManyToManyField(Tag)
 
     def __str__(self):
         return self.titulo
@@ -66,3 +67,18 @@ class Receitas(models.Model):
             self.slug = slug
 
         return super().save(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        error_message = defaultdict(list)
+        receitas_do_bd = Receitas.objects.filter(
+            titulo__iexact = self.titulo
+        ).first()
+
+        if receitas_do_bd:
+            if receitas_do_bd.pk != self.pk:
+                error_message['titulo'].append(
+                    'Encontrei receitas com esse mesmo título!!!'
+                )
+
+        if error_message:
+            raise ValidationError(error_message)
