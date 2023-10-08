@@ -15,10 +15,16 @@
         <span class="recipe-author-item">
         <i class="fas fa-user"></i>
             {% if receita.autor is not None %}
+                {% if receita.autor.profile %}
+                    <a href="{% url 'autores:profile' receita.autor.profile.id %}">
+                {% endif %}
                 {% if receita.autor.first_name %}
                     {{ receita.autor.first_name }} {{ receita.autor.last_name }}
                 {% else %}
                     {{ receita.autor.username }}
+                {% endif %}
+                {% if receita.autor.profile %}
+                    </a>
                 {% endif %}
             {% else %}
                 Desconhecido

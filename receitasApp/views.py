@@ -63,7 +63,7 @@ class ReceitaListViewBase(ListView):
             esta_publicado=True,
         )
         consulta = consulta.select_related('autor', 'categoria')
-        consulta = consulta.prefetch_related('tags')
+        consulta = consulta.prefetch_related('tags', 'autor__profile')
 
         return consulta
 
