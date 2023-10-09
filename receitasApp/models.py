@@ -7,6 +7,7 @@ from django.db.models.functions import Concat
 from tagApp.models import Tag
 from django.forms import ValidationError
 from collections import defaultdict
+from django.utils.translation import gettext_lazy as _
 
 class ReceitasManager(models.Manager):
     def get_publicados(self):
@@ -31,8 +32,8 @@ class Categoria(models.Model):
 
 class Receitas(models.Model):
     objects = ReceitasManager()
-    titulo = models.CharField(max_length=65)
-    descricao = models.CharField(max_length=165)
+    titulo = models.CharField(max_length=65, verbose_name=_('Title'))
+    descricao = models.CharField(max_length=165, verbose_name=_('Description'))
     slug = models.SlugField(unique=True)
     tempo_preparo = models.IntegerField()
     unidade_tempo_preparo = models.CharField(max_length=65)
@@ -82,3 +83,7 @@ class Receitas(models.Model):
 
         if error_message:
             raise ValidationError(error_message)
+
+    class Meta:
+        verbose_name = _('Recipe')
+        verbose_name_plural = _('Recipes')

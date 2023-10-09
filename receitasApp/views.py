@@ -10,6 +10,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.db.models.aggregates import Count
 from tagApp.models import Tag
+from django.utils import translation
+from django.utils.translation import gettext as _
 
 POR_PAGINA = os.environ.get('RECEITAS_POR_PAGINA', 6)
 
@@ -74,8 +76,13 @@ class ReceitaListViewBase(ListView):
             contexto.get('receitas'),
             POR_PAGINA
         )
+        html_language = translation.get_language()
         contexto.update(
-            {'receitas': pagina_objeto, 'range_paginacao': range_paginacao,}
+            {
+                'receitas': pagina_objeto,
+                'range_paginacao': range_paginacao,
+                'html_language': html_language,
+            }
         )
 
         return contexto
@@ -102,9 +109,10 @@ class ReceitaListViewCategoria(ReceitaListViewBase):
 
     def get_context_data(self, *args, **kwargs):
         contexto = super().get_context_data(*args, **kwargs)
+        category_translation = _('Category')
 
         contexto.update({
-            'titulo': f'{contexto.get("receitas")[0].categoria.nome} - Categoria | '
+            'titulo': f'{contexto.get("receitas")[0].categoria.nome} - {category_translation} | '
         })
 
         return contexto
