@@ -8,6 +8,9 @@ from tagApp.models import Tag
 from django.forms import ValidationError
 from collections import defaultdict
 from django.utils.translation import gettext_lazy as _
+import os
+from django.conf import settings
+from PIL import Image
 
 class ReceitasManager(models.Manager):
     def get_publicados(self):
@@ -62,12 +65,40 @@ class Receitas(models.Model):
     def get_abolute_url(self):
         return reverse('receitas:receita', args=(self.id,))
 
+    @staticmethod
+    def redimensionar_imagem(image, nova_largura=500):
+        caminho_completo_imagem = os.path.join(settings.MEDIA_ROOT, image.name)
+        image_Pillow = Image.open(caminho_completo_imagem)
+        original_width, original_height = image_Pillow.size
+
+        if original_width <= nova_largura:
+            image_Pillow.close()
+            return
+
+        nova_altura = round((nova_largura * original_height) / original_width)
+        #print('ALTURA:', nova_altura)
+        #print('LARGURA', nova_largura)
+        nova_imagem = image_Pillow.resize((nova_largura, nova_altura), Image.LANCZOS)
+        nova_imagem.save(
+            caminho_completo_imagem,
+            optimize=True,
+            quality=70,
+        )
+
     def save(self, *args, **kwargs):
         if not self.slug:
             slug = f'{slugify(self.titulo)}'
             self.slug = slug
 
-        return super().save(*args, **kwargs)
+        salvo = super().save(*args, **kwargs)
+
+        if self.receita_imagem:
+            try:
+                self.redimensionar_imagem(self.receita_imagem, 500)
+            except FileNotFoundError:
+                ...
+
+        return salvo
 
     def clean(self, *args, **kwargs):
         error_message = defaultdict(list)
