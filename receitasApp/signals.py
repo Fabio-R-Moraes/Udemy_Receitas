@@ -13,12 +13,18 @@ def delete_imagem(instance):
 def receita_imagem_deletar(sender, instance, *args, **kwargs):
     print('SIGNAL CHAMADO PELA RECEITA...')
     old_instance = Receitas.objects.filter(pk=instance.pk).first()
-    delete_imagem(old_instance)
+
+    if old_instance:
+        delete_imagem(old_instance)
 
 @receiver(pre_save, sender=Receitas)
 def receita_imagem_update(sender, instance, *args, **kwargs):
     old_instance = Receitas.objects.filter(pk=instance.pk).first()
-    print(old_instance.receita_imagem, instance.receita_imagem)
+    #print(old_instance.receita_imagem, instance.receita_imagem)
+
+    if not old_instance:
+        return
+
     nova_imagem = old_instance.receita_imagem != instance.receita_imagem
     print('Troquei a imagem??', nova_imagem)
 
